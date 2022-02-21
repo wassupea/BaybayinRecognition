@@ -14,7 +14,7 @@ def draw(event):
 def close_canvas():
     window.destroy()
 
-# Fucntion clearing canvas. Event of Clear Button on TK window.
+# Fucntion clearing canvas.
 def clear_canvas():
     canvas.delete("all")
 
@@ -43,10 +43,6 @@ lab = tk.Label(window, text="WRITE BAYBAYIN CHARACTERS", width=28, height=1, fg=
                     font=('Lucida Typewriter', 20, ' bold '))
 lab.place(x=60, y=12)
 
-#canvas1 = tk.Canvas(height=218,width=400,bg="#3e7d75", borderwidth = '8')
-#canvas1.pack()
-#canvas1.place(x=0,y=412)
-
 classify_btn = tk.Button( text = 'Classify',state=DISABLED,width = 12,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Lucida Typewriter',16))
 classify_btn.pack()
 classify_btn.place(x=430,y=150)
@@ -59,7 +55,7 @@ exit_btn = tk.Button(text = "Close",command=close_canvas,width = 12,borderwidth=
 exit_btn.pack()
 exit_btn.place(x=430,y=290)
 
-# grid structure (Used for setting elements on particular position on screen.
+# setting elements on particular position on screen.
 canvas.grid(row=0, column=0,padx=30,pady=80)
 
 # Event occurs while dragging mouse
