@@ -4,6 +4,11 @@ from PIL import ImageGrab , ImageTk ,Image
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from keras.models import load_model
+
+
+# Load Model
+model = load_model('./baybayin_model1.h5')
 
 def draw(event):
     x , y = event.x,event.y
@@ -26,6 +31,52 @@ def classify_char():
     written_char.save('./written_chars/sulat.png','PNG')
     digit=recognize_char(written_char)
     written_char.show()
+    print(str(digit))
+
+    for digits in digit:
+        if digits==0:
+            output+='a'
+        elif digits==1:
+            output+='ba'
+        elif digits==2:
+            output+='ka'
+        elif digits==3:
+            output+='da'
+        elif digits==4:
+            output+='ga'
+        elif digits==5:
+            output+='ha'
+        elif digits==6:
+            output+='la'
+        elif digits==7:
+            output+='ma'
+        elif digits==8:
+            output+='na'
+        elif digits==9:
+            output+='nga'
+        elif digits==10:
+            output+='pa'
+        elif digits==11:
+            output+='ra'
+        elif digits==12:
+            output+='sa'
+        elif digits==13:
+            output+='ta'
+        elif digits==14:
+            output+='wa'
+        elif digits==15:
+            output+='ya' 
+        elif digits==16:
+            output+='a'
+        elif digits==17:
+            output+='e' # or i
+        elif digits==18:
+            output+='o' # or u
+    return output
+        
+    lab1 = tk.Label(window, text='Predicted Digit is : ' + str(digit), width=24, height=2, fg="#3e7d75", bg="black",
+                   font=('Lucida Typewriter', 16, ' bold '))
+    lab1.place(x=10, y=420)
 
 def recognize_char(image):
     char_image = cv2.imread('./written_chars/sulat.png')
@@ -33,29 +84,37 @@ def recognize_char(image):
     returns, thresh = cv2.threshold(grey.copy(), 75, 255, cv2.THRESH_BINARY_INV)
     contours, hierachy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     preprocessed_digits = []
+    filtered_image = cv2.resize(char_image,(64,64))
+    if len(filtered_image.shape) == 3:
+        filtered_image = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2GRAY)
 
-    for c in contours:
-        x, y, w, h = cv2.boundingRect(c)
+
+
+
+    #for c in contours:
+        #x, y, w, h = cv2.boundingRect(c)
 
         # Creating a rectangle around the digit in the original image (for displaying the digits fetched via contours)
-        cv2.rectangle(char_image, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
+        #cv2.rectangle(char_image, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
 
         # Cropping out the digit from the image corresponding to the current contours in the for loop
-        digit = thresh[y:y + h, x:x + w]
+        #digit = thresh[y:y + h, x:x + w]
 
         # Resizing that digit to (18, 18)
-        resized_digit = cv2.resize(digit, (18, 18))
+        #resized_digit = cv2.resize(digit, (18, 18))
 
         # Padding the digit with 5 pixels of black color (zeros) in each side to finally produce the image of (28, 28)
-        padded_digit = np.pad(resized_digit, ((5, 5), (5, 5)), "constant", constant_values=0)
+        #padded_digit = np.pad(resized_digit, ((5, 5), (5, 5)), "constant", constant_values=0)
 
         # Adding the preprocessed digit to the list of preprocessed digits
-        preprocessed_digits.append(padded_digit)
-        print("\n\n\n----------------Contoured Image--------------------")
-        plt.imshow(char_image, cmap="gray")
-        plt.show()
-        print("END")
-        print("PADDED DIGIT : ", padded_digit)
+        #preprocessed_digits.append(padded_digit)
+        #print("\n\n\n----------------Contoured Image--------------------")
+        #plt.imshow(char_image, cmap="gray")
+        #plt.show()
+        #print("END")
+        #print("PADDED DIGIT : ", padded_digit)
+    res = model.predict(filtered_image.reshape(1, 64, 64, 1))
+    return np.argmax(res)
 
 
 def center_window():
@@ -65,10 +124,10 @@ def center_window():
 
     ws = window.winfo_screenwidth() #1366
     hs = window.winfo_screenheight() #768
-    print(ws,hs)
+    #print(ws,hs)
     x = (ws / 2) - (w / 2) - 20
     y = (hs / 2) - (h / 2) - 50
-    print(x,y)
+    #print(x,y)
     window.geometry('%dx%d+%d+%d' % (w, h, x, y))
     window.resizable(width=False, height=False)
 
