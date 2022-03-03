@@ -93,9 +93,9 @@ def classify_char():
         elif baybayin_char==16:
             output='tul'
         elif baybayin_char==17:
-            output='wa' 
+            output='wa' # or i
         elif baybayin_char==18:
-            output='ya' 
+            output='ya' # or u
 
     print(output)
     
@@ -143,14 +143,22 @@ def preprocess_segment():
    
     for c in contours:
         x, y, w, h = cv2.boundingRect(c)
-        cv2.rectangle(with_contours,(x,y), (x+w,y+h), (0,255,0), 1)
-        cropped_contour= binary[y:y+h, x:x+w]
-        
-        resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
-        img_reshape = resize_contour.reshape(1,64,64,1)
-        image_reshape = img_reshape / 255.0
+    
+        cv2.rectangle(image,(x,y), (x+w,y+h), (250,0,0), 1)
+        top=int(0.05 * binary.shape[0])
+        bottom= top
+        left = int(0.05 * binary.shape[1])
+        right = left
+        binary_up = cv2.copyMakeBorder(binary, top,bottom,left,right, cv2.BORDER_REPLICATE)
 
-        pred = model.predict([image_reshape])
+
+        cropped_contour= binary[y-top:y+h+bottom, x-left:x+w+right]
+
+        resized_contour = cv2.resize(cropped_contour,(64,64), interpolation=cv2.INTER_AREA)
+
+        img_reshape = resized_contour.reshape(1,64,64,1)
+        img_reshape = img_reshape/255
+        pred = model.predict([img_reshape])
         final = np.argmax(pred)
         print(final)
         
