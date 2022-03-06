@@ -164,30 +164,7 @@ def preprocess_segment():
         
         cv2.imshow('Image',cropped_contour)
         cv2.waitKey(0)
-        #resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
-
-        #if (resize_contour.shape) == 3:
-            #resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_BGR2GRAY)
-
-        #print(len(resize_contour))
-        #print(resize_contour.shape)
-        #img_reshape = resize_contour.reshape(1,64,64,1)
-        #image_reshape = img_reshape / 255.0
-        #img_name = "written_chars" + str(count+1) +".png"
-        #cv2.imwrite(img_name,resize_contour)
-        #cv2.imread(img_name)
-        #cv2.imshow('Image',resize_contour)
-        #cv2.waitKey(0)
-        #segmented.append(image_reshape)
-        #print(len(segmented))
-        #print('Segmented shape:', np.array(segmented).shape)
-
-        #predict = model.predict([segmented])[0]
-        #final_predict = np.argmax(predict)
-        #print(final_predict)
-
-        #return final_predict
-
+    
 
 if __name__ == '__main__':
     window = tk.Tk() # create a Tk root window

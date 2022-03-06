@@ -1,0 +1,41 @@
+
+def preprocess_segment(img):
+    image = cv2.imread('./written_chars/sulat.png')
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    count=1
+
+    #create a binary threshold image
+
+    ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+
+
+    # find the contours from the thresholded image
+    contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    # draw all contours
+    with_contours = cv2.drawContours(image, contours, -1, (0, 255, 0), 1)
+
+   
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        cv2.rectangle(with_contours,(x,y), (x+w,y+h), (0,255,0), 1)
+        cropped_contour= with_contours[y:y+h, x:x+w]
+        
+        resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
+        resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_BGR2GRAY)
+        img_reshape = resize_contour.reshape(1,64,64,1)
+        image_reshape = img_reshape / 255.0
+        img_name = "written_chars" + str(count+1) +".png"
+        cv2.imwrite(img_name,resize_contour)
+        cv2.imread(img_name)
+        cv2.imshow('Image',resize_contour)
+        cv2.waitKey(0)
+        segmented.append(image_reshape)
+        print(len(segmented))
+        print('Segmented shape:', np.array(segmented).shape)
+
+        predict = model.predict(image_reshape)
+        final_predict = np.argmax(predict)
+        print(final_predict)
+
+        return final_predict
