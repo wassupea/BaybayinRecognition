@@ -1,10 +1,8 @@
-
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
 from keras.models import load_model
+import cv2
+import numpy as np
 
-model = load_model('./baybayin_model1.h5') 
+model = load_model('./baybayin_model2.h5') 
 
 def preprocess_segment(img):
     print ('-------RUNNING BAYBAYIN_GUI.py -------')
@@ -62,28 +60,24 @@ def preprocess_segment(img):
             elif baybayin_char==6:
                 output ='ka'
             elif baybayin_char==7:
-                output ='kuw'
-            elif baybayin_char==8:
                 output ='la'
-            elif baybayin_char==9:
+            elif baybayin_char==8:
                 output ='ma'
-            elif baybayin_char==10:
+            elif baybayin_char==9:
                 output ='na'
-            elif baybayin_char==11:
+            elif baybayin_char==10:
                 output ='nga'
-            elif baybayin_char==12:
+            elif baybayin_char==11:
                 output ='o/u'
-            elif baybayin_char==13:
+            elif baybayin_char==12:
                 output ='pa'
-            elif baybayin_char==14:
+            elif baybayin_char==13:
                 output='sa'
-            elif baybayin_char==15:
+            elif baybayin_char==14:
                 output='ta' 
-            elif baybayin_char==16:
-                output='tul'
-            elif baybayin_char==17:
+            elif baybayin_char==15:
                 output='wa' # or i
-            elif baybayin_char==18:
+            elif baybayin_char==16:
                 output='ya' # or u
             print (output)
 

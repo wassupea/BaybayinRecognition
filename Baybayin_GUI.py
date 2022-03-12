@@ -1,36 +1,21 @@
 from tkinter import *
 import tkinter as tk
-from PIL import ImageGrab
+from PIL import ImageGrab, Image
+from matplotlib.pyplot import title
 from recognition import preprocess_segment
+import pyautogui    
+
 
 
 
 #RECOGNIZING ALL CHARACTERS AND ACCURATE SO FAR...
 
-def draw(event):
-    x , y = event.x,event.y
-    #print(f"X : {x} , Y : {y}")
-    r = 5
-    canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
-    classify_btn.configure(state=NORMAL)
-    
 
-# Function for exit.
-def close_canvas():
-    window.destroy()
-
-# Fucntion clearing canvas.
-def clear_canvas():
-    canvas.delete("all")
-
-
-        
 
 def center_window():
     # Putting window in center
     w = 600
     h = 450
-
     ws = window.winfo_screenwidth() #1366
     hs = window.winfo_screenheight() #768
     x = (ws / 2) - (w / 2) - 20
@@ -39,19 +24,32 @@ def center_window():
     window.resizable(width=False, height=False)
 
 
+def close_windows():
+    window.destroy()
+
+def clear_canvas():
+    canvas.delete("all")
+
+
+def draw(event):
+    x , y = event.x,event.y
+    #print(f"X : {x} , Y : {y}")
+    r = 5
+    canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
+    classify_btn.configure(state=NORMAL)
+    
+    
+
 def classify_char():
-    written_char = ImageGrab.grab(bbox=(400,215,780,530))
-    written_char.save('./written_chars/sulat.png','PNG')
-    baybayin_chars = []
+    x, y = canvas.winfo_rootx(), canvas.winfo_rooty()
+    w, h = canvas.winfo_width(), canvas.winfo_height()
+    written_char = pyautogui.screenshot('./written_chars/sulat.png', region=(x, y, w, h))
+    written_char.show()
+    baybayin_chars=[]
     digit=preprocess_segment(written_char)
     baybayin_chars.append(digit)
-    #written_char.show()
+    print('bay: ', baybayin_chars)
     #print(str(digit))
-    
-    
-#function for image preprocess and image segmentation
-
-
     
 
 if __name__ == '__main__':
@@ -73,13 +71,12 @@ if __name__ == '__main__':
     clear_btn.pack()
     clear_btn.place(x=430,y=220)
 
-    exit_btn = tk.Button(text = "Close",command=close_canvas,width = 12,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Lucida Typewriter',16))
+    exit_btn = tk.Button(text = "Close",command=close_windows,width = 12,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Lucida Typewriter',16))
     exit_btn.pack()
     exit_btn.place(x=430,y=290)
 
-    # setting elements on particular position on screen.
     canvas.grid(row=0, column=0,padx=30,pady=80)
 
-    # Event occurs while dragging mouse
+
     canvas.bind("<B1-Motion>",draw)
     tk.mainloop()
