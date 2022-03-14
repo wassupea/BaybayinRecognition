@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-model = load_model('./baybayin_model2.h5') 
+model = load_model('./model/baybayin_model2.h5') 
 
 
 
