@@ -1,9 +1,11 @@
+# Importing of important modules.
 from tkinter import *
 import tkinter as tk
 from PIL import ImageGrab, Image
-from matplotlib.pyplot import title
-from recognition import preprocess_segment
+from recognition import preprocess, segment
+import cv2
 import pyautogui    
+import numpy as np
 
 
 
@@ -12,6 +14,7 @@ import pyautogui
 
 
 
+#For positioning the system at the center
 def center_window():
     # Putting window in center
     w = 600
@@ -24,35 +27,67 @@ def center_window():
     window.resizable(width=False, height=False)
 
 
+#Close function of the system
 def close_windows():
     window.destroy()
 
+
+#Function for clearing the drawing canvas
 def clear_canvas():
     canvas.delete("all")
 
 
+#Function for writing on the canvas
 def draw(event):
     x , y = event.x,event.y
-    #print(f"X : {x} , Y : {y}")
     r = 5
     canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
     classify_btn.configure(state=NORMAL)
     
-    
 
-def classify_char():
+
+#Function for capturing the written characters as an image
+def get_image():
+
+    #getting the x,y, w, h coordinates of the drawing canvas
     x, y = canvas.winfo_rootx(), canvas.winfo_rooty()
     w, h = canvas.winfo_width(), canvas.winfo_height()
-    written_char = pyautogui.screenshot('./written_chars/sulat.png', region=(x, y, w, h))
-    written_char.show()
-    baybayin_chars=[]
-    digit=preprocess_segment(written_char)
-    baybayin_chars.append(digit)
-    print('bay: ', baybayin_chars)
-    #print(str(digit))
     
+    #Screen cap the drawing canvas
+    path = './written_chars/sulat.png'
+    pyautogui.screenshot(path, region=(x, y, w, h))
+    image = cv2.imread(path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    #converting saved screen cap to numpy array
+    array_image = np.array(image)
+
+    hello = classify_image(array_image) #Passing the image for the classification process
+    return hello
+
+    
+#Function for Recognition/Classification of the Written Characters
+def classify_image(img):
+
+    #Steps for Classification of Characters
+            #1 Image Preprocessing
+            #2 Image Segmentation
+            #3 Feature Extraction   (Held by the imported cnn model)
+            #4 Classification       (Held by the imported cnn model)
+
+    baybayin_chars=[]
+    preprocessed_image = preprocess(img)  #Preprocessing image or Image enhancement
+    segment_image = segment(preprocessed_image)
+
+
+    #digit=preprocess_segment(written_char)
+    baybayin_chars.append(segment_image)
+    print('Written Baybayin Characters:',baybayin_chars)
+    return baybayin_chars
+
 
 if __name__ == '__main__':
+
+    #GUI BUILD
     window = tk.Tk() # create a Tk root window
     window.configure(background='#a1d4cf')
     window.title("Baybayin Character Recognition")
@@ -63,7 +98,7 @@ if __name__ == '__main__':
                         font=('Lucida Typewriter', 20, ' bold '))
     lab.place(x=60, y=12)
 
-    classify_btn = tk.Button( text = 'Classify',state=DISABLED,command=classify_char,width = 12,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Lucida Typewriter',16))
+    classify_btn = tk.Button( text = 'Classify',state=DISABLED,command=get_image,width = 12,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Lucida Typewriter',16))
     classify_btn.pack()
     classify_btn.place(x=430,y=150)
 
