@@ -2,11 +2,12 @@
 from tkinter import *
 import tkinter as tk
 from PIL import ImageGrab, Image
-from recognition import preprocess, segment
+from recognition import preprocess, recognition, segment
 import cv2
 import pyautogui    
 import numpy as np
-
+from keras.models import load_model
+model = load_model('./model/baybayin_model2.h5') 
 
 
 
@@ -76,13 +77,13 @@ def classify_image(img):
 
     baybayin_chars=[]
     preprocessed_image = preprocess(img)  #Preprocessing image or Image enhancement
-    segment_image = segment(preprocessed_image)
-
-
-    #digit=preprocess_segment(written_char)
+    segment_image = segment(img)
+    #recognize_image = recognition(segment_image)
     baybayin_chars.append(segment_image)
-    print('Written Baybayin Characters:',baybayin_chars)
+    tk.messagebox.showinfo(title='Written Baybayin Characters', message=baybayin_chars)
+     
     return baybayin_chars
+
 
 
 if __name__ == '__main__':
