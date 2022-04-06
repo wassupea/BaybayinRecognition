@@ -6,8 +6,7 @@ from recognition import preprocess, recognition, segment
 import cv2
 import pyautogui    
 import numpy as np
-from keras.models import load_model
-model = load_model('./model/baybayin_model2.h5') 
+
 
 
 

@@ -1,4 +1,3 @@
-from cgitb import reset
 from keras.models import load_model
 import cv2
 from matplotlib import image
@@ -150,8 +149,3 @@ def recognition(img):
                 output=' wa' # or i
             elif baybayin_char==16:
                 output=' ya' # or u
-
-        return output
-
-
-   
