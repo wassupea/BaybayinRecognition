@@ -1,9 +1,11 @@
 from tkinter import *
+from tkinter import messagebox
 import tkinter as tk
-import pyautogui 
+import pyautogui    
+#from fuzzywuzzy import fuzz
 import cv2
 import numpy as np   
-from recognition import preprocess, recognition, segment
+from recognition import preprocess, segment
 class Baybayin_GUI:
 
     def __init__(self, master):
@@ -12,9 +14,9 @@ class Baybayin_GUI:
         self.center_window()
 
         #drawing canvas widget
-        self.canvas = tk.Canvas(height=300,width=400,bg="white",cursor="dotbox",highlightthickness=5)
+        self.canvas = tk.Canvas(height=200,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.canvas.pack()
-        self.canvas.place(x=30,y=80)
+        self.canvas.place(x=47,y=80)
         self.canvas.bind("<B1-Motion>",self.draw)
 
 
@@ -24,17 +26,17 @@ class Baybayin_GUI:
         self.lab.place(x=120, y=12)
         
         #buttons widget
-        self.classify_btn = Button(text = 'Classify',state=DISABLED,command=self.get_image,width = 12,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Lucida Typewriter',16))
+        self.classify_btn = Button(text = 'Classify',state=DISABLED,command=self.get_image,width = 10,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Tahoma',13))
         self.classify_btn.pack()
-        self.classify_btn.place(x=510,y=130)
+        self.classify_btn.place(x=180,y=400)
 
-        self.clear_btn = Button(text = "Clear Window",command=self.clear_canvas,width = 12,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Lucida Typewriter',16))
+        self.clear_btn = Button(text = "Clear",command=self.clear_canvas,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
         self.clear_btn.pack()
-        self.clear_btn.place(x=510,y=200)
+        self.clear_btn.place(x=340,y=400)
 
-        exit_btn = tk.Button(text = "Close",command=self.close_window,width = 12,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Lucida Typewriter',16))
+        exit_btn = tk.Button(text = "Close",command=self.close_window,width = 10,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Tahoma',13))
         exit_btn.pack()
-        exit_btn.place(x=510,y=270)
+        exit_btn.place(x=500,y=400)
 
     
 
@@ -89,7 +91,6 @@ class Baybayin_GUI:
 
 
     def classify_image(self,img):
-
     #Steps for Classification of Characters
             #1 Image Preprocessing
             #2 Image Segmentation
@@ -101,9 +102,11 @@ class Baybayin_GUI:
         segment_image = segment(img)
         #recognize_image = recognition(segment_image)
         baybayin_chars.append(segment_image)
-        tk.messagebox.showinfo(title='Written Baybayin Characters', message=baybayin_chars)
+        
+        messagebox.showinfo(title='Written Baybayin Characters', message=baybayin_chars)
         
         return baybayin_chars
+    
 
 
 
@@ -115,3 +118,5 @@ if __name__ == '__main__':
 
     b = Baybayin_GUI(root)
     root.mainloop()
+
+
