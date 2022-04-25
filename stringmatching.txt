@@ -1,0 +1,192 @@
+#from keras.models import load_model
+from operator import itemgetter
+import cv2
+from matplotlib import image
+import matplotlib.pyplot as plt
+import numpy as np
+import collections
+from fuzzywuzzy import process, fuzz
+
+
+#model = load_model('./model/final_baybayin_model.h5') 
+
+
+
+def preprocess(img):
+    print ('-------RUNNING PREPROCESSING -------')
+    #gaussian blur the image  --- used for noise removal of the image
+    blur = cv2.GaussianBlur(img,(5,5),cv2.BORDER_DEFAULT)
+
+    #convert image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    #create a binary threshold image
+    ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+    return binary
+
+def segment(img):
+    preprocessed = preprocess(img)
+    print ('-------RUNNING SEGMENTATION -------')
+    final_predict=[]
+    output=""
+    segmented =[]
+    before=0
+    choices = ['bakas','bukas','batas','butas','kaibigan','kaagad','kalaguyo','kalahok','kalakbay','kalaunan','kalaro',
+    'kalihim','kalinggalan','kaloob','kabagang','kasalungat','kabaka','kabarkada','kabaro','kabasangal','kababayan',
+    'kaedad','kaeskuwela','kailan','bata','baog','ga'
+    ]
+
+  
+    # find the contours from the thresholded image
+    contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+     # draw all contours
+    with_contours = cv2.drawContours(preprocessed, contours, -1, (0, 255, 0), 1)
+    sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
+    
+    sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * img.shape[1] )
+   
+    for i, ctr in enumerate(sorted_ctrs):
+        x, y, w, h = cv2.boundingRect(ctr)
+        cropped_contour=img[y:y + h, x:x + w]
+        resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
+        resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
+        img_reshape = resize_contour.reshape(1,64,64,1)
+        img_reshape = img_reshape/255
+        #pred = model.predict([img_reshape])[-1]
+        #final = np.argmax(pred)
+
+        final = [1,14,13]
+        vowels = [11,3]
+        check = any(item in vowels for item in final)
+
+        for c in final:
+            final_predict.append(c)  
+        #dup = {x for x in baybayin_chars if baybayin_chars.count(x) > 1}
+
+    print(final_predict)
+
+    if check is True:
+        if 11 in final_predict:
+            before =  final_predict.index(11) - 1
+            x = final_predict[before]
+            print(x)
+    else:
+        x= -1
+
+
+
+    last = len(final_predict)-1
+
+
+    for baybayin_char in final_predict:
+        if baybayin_char==0:
+            output+='a'
+        elif baybayin_char==1:
+            if final_predict[x] ==1 or final_predict[last]==1:
+                output+='b'
+            else:
+                output+='ba'
+        elif baybayin_char==2:
+            if final_predict[x]==2 or final_predict[last]==2:
+                output+='d/r'
+            else:
+                output+= 'dara'
+        elif baybayin_char==3:
+            output+= 'ei'
+
+        elif baybayin_char==4 :
+            if final_predict[x]==4 or final_predict[last]==4:
+               output+='g'
+            else:
+                output+= 'ga'
+        elif baybayin_char==5:
+            if final_predict[x]==5 or final_predict[last]==5:
+               output+='h'
+            else:
+                output+= 'ha'
+        elif baybayin_char==6:
+            if final_predict[x]==6 or final_predict[last]==6: 
+               output+='k'
+            else:
+                output+= 'ka'
+        elif baybayin_char==7:
+            if final_predict[x]==7 or final_predict[last]==7:
+               output+='l'
+            else:
+                output+= 'la'
+        elif baybayin_char==8:
+            if final_predict[x]==8 or final_predict[last]==8:
+               output+='m'
+            else:
+                output+= 'ma'
+        elif baybayin_char==9:
+            if final_predict[x]==9 or final_predict[last]==9:
+               output+='n'
+            else:
+                output+= 'na'
+        elif baybayin_char==10:
+            if final_predict[x]==10 or final_predict[last]==10:
+               output+='ng'
+            else:
+                output+= 'nga'
+        elif baybayin_char==11:
+            output+='ou'
+        elif baybayin_char==12:
+            if final_predict[x]==12 or final_predict[last]==12:
+               output+='p'
+            else:
+                output+= 'pa'
+        elif baybayin_char==13:
+            if final_predict[x]==13 or final_predict[last]==13 :
+               output+='s'
+            else:
+                output+= 'sa'
+        elif baybayin_char==14:
+            if final_predict[x]==14 or final_predict[last]==14:
+               output+='t'
+            else:
+                output+= 'ta'
+        elif baybayin_char==15:
+            if final_predict[x]==15 or final_predict[last]==15:
+               output+='w'
+            else:
+                output+= 'wa'
+        elif baybayin_char==16:
+            if final_predict[x]==16 or final_predict[last]==16:
+               output+='y'
+            else:
+                output+= 'ya'
+    print(output)
+
+    a_file = open("tagalog_dict.txt", "r")
+
+    tagalog_words = []
+    for line in a_file:
+        stripped_line = line.strip()
+        line_list = stripped_line.split()
+        tagalog_words.append(line_list)
+
+    a_file.close()
+
+
+    highest=""
+
+    #print(output)
+    Ratios = process.extract(output,tagalog_words)
+    print(Ratios)
+    highest = process.extractOne(output,tagalog_words)
+    
+
+    return highest
+
+
+
+
+
+
+
+
+
+def recognition(img):
+    pass

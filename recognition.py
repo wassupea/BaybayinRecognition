@@ -22,6 +22,13 @@ def preprocess(img):
     ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
     return binary
 
+def ret_x_cord_contour(contours):
+    if cv2.contourArea(contours) > 10:
+        cent_moment = cv2.moments(contours)
+        return(int(cent_moment['m10']/cent_moment['m00']))
+    else:
+        pass
+
 def segment(img):
     preprocessed = preprocess(img)
     print ('-------RUNNING SEGMENTATION -------')
@@ -41,10 +48,10 @@ def segment(img):
    
     area_sort = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
 
-    
+    contours_left_2_right = sorted(contours,key = ret_x_cord_contour,reverse=False)
 
-    for i, ctr in enumerate(sorted_ctrs):
-        x, y, w, h = cv2.boundingRect(ctr)
+    for (i,c) in enumerate(contours_left_2_right):
+        x, y, w, h = cv2.boundingRect(c)
         cropped_contour=img[y:y + h, x:x + w]
         resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
         resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
