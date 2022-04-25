@@ -60,7 +60,7 @@ class Baybayin_GUI:
 
     def draw(self, event):
         x , y = event.x,event.y
-        r = 5
+        r = 4
         self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
         self.classify_btn.configure(state=NORMAL)
 

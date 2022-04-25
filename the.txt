@@ -1,4 +1,4 @@
-resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
+        resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
         resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
         img_reshape = resize_contour.reshape(1,64,64,1)
         img_reshape = img_reshape/255
@@ -51,6 +51,12 @@ resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_A
            
     return output
 
+
+    sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * img.shape[1] )
+   
+    area_sort = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
+
+    for i, ctr in enumerate(sorted_ctrs):
 
 
 

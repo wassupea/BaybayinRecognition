@@ -4,9 +4,9 @@ from matplotlib import image
 import matplotlib.pyplot as plt
 import numpy as np
 import collections
+from skimage.morphology import skeletonize
 
-
-model = load_model('./model/100.h5') 
+model = load_model('./model/baybayin_model2.h5') 
 
 
 
@@ -22,8 +22,8 @@ def preprocess(img):
     ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
 
     kernel = np.ones((5,5),np.uint8)
-    dilation = cv2.dilate(binary, kernel, iterations =4)
-    cv2.imshow('di',dilation)
+    dilation = cv2.dilate(binary, kernel, iterations =3)
+    #cv2.imshow('di',dilation)
     return dilation
 
 def ret_x_cord_contour(contours):
@@ -52,27 +52,35 @@ def segment(img):
    
     area_sort = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
 
-    contours_left_2_right = sorted(contours,key = ret_x_cord_contour,reverse=False)
+    try:
+        contours_left_2_right = sorted(contours,key = ret_x_cord_contour,reverse=False)
+    except:
+        output='fixed drawing'
+    count=0
 
-    for (i,c) in enumerate(contours_left_2_right):
-        x, y, w, h = cv2.boundingRect(c)
-        cropped_contour=img[y:y + h, x:x + w]
-        cv2.imshow('segment no:'+str(i),cropped_contour)
-        cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
-        resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
-        resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
-        img_reshape = resize_contour.reshape(1,64,64,1)
-        img_reshape = img_reshape/255
-        pred = model.predict([img_reshape])[0]
-        final = np.argmax(pred)
+    try:
+        for (i,c) in enumerate(contours_left_2_right):
+            x, y, w, h = cv2.boundingRect(c)
+            cropped_contour=img[y:y + h, x:x + w]
+            count+=1
+            cv2.imshow('segment no:'+str(i),cropped_contour)
+            cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
+            resize_contour = cv2.resize(cropped_contour, (64, 64), interpolation=cv2.INTER_AREA)
+            resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
+            img_reshape = resize_contour.reshape(1,64,64,1)
+            img_reshape = img_reshape/255
+            pred = model.predict([img_reshape])[0]
+            final = np.argmax(pred)
+            
+            final_predict.append(final)  
+            data = str(final) + ':' +str((max(pred))*100)+'%'
+            acc = max(pred)
         
-        final_predict.append(final)  
-        data = str(final) + ':' +str((max(pred))*100)+'%'
-        acc = max(pred)
-     
-        print(data)
+            print(data)
+    except:
+        output='Fix Drawing!'
         
-
+    print(count)
     print(final_predict)
 
     for baybayin_char in final_predict:
