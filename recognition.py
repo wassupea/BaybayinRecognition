@@ -6,7 +6,7 @@ import numpy as np
 import collections
 
 
-model = load_model('./model/final_baybayin_model.h5') 
+model = load_model('./model/100.h5') 
 
 
 
@@ -35,7 +35,7 @@ def segment(img):
 
      # draw all contours
     with_contours = cv2.drawContours(preprocessed, contours, -1, (0, 255, 0), 1)
-    sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
+    #sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
     
     sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * img.shape[1] )
    
@@ -50,10 +50,15 @@ def segment(img):
         resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
         img_reshape = resize_contour.reshape(1,64,64,1)
         img_reshape = img_reshape/255
-        pred = model.predict([img_reshape])[-1]
+        pred = model.predict([img_reshape])[0]
         final = np.argmax(pred)
+        
         final_predict.append(final)  
-        #dup = {x for x in baybayin_chars if baybayin_chars.count(x) > 1}
+        data = str(final) + ':' +str((max(pred))*100)+'%'
+        acc = max(pred)
+     
+        print(data)
+        
 
     print(final_predict)
 
