@@ -18,13 +18,26 @@ def preprocess(img):
     #convert image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    #create a binary threshold image
-    ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+    image_blurred = cv2.GaussianBlur(gray, (9, 9), 0)
+  
 
-    kernel = np.ones((5,5),np.uint8)
-    dilation = cv2.dilate(binary, kernel, iterations =3)
-    #cv2.imshow('di',dilation)
-    return dilation
+    image_blurred_d = cv2.dilate(image_blurred, None)
+  
+
+    #create a binary threshold image
+    ret, binary = cv2.threshold(image_blurred_d, 150, 255, cv2.THRESH_BINARY_INV)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    erosion = cv2.erode(binary, kernel, iterations = 1)
+   
+
+    kernel1 = np.ones((5,5),np.uint8)
+    dilation = cv2.dilate(erosion, kernel1, iterations = 3)
+    cv2.imshow('dilation', dilation)
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    erosion1 = cv2.erode(dilation, kernel, iterations = 5)
+    cv2.imshow('erosion', erosion1)
+    return erosion1
 
 def ret_x_cord_contour(contours):
     if cv2.contourArea(contours) > 10:
