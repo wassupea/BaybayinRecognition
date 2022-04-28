@@ -7,7 +7,7 @@ import numpy as np
 import collections
 from skimage.morphology import skeletonize
 from thefuzz import process
-model = load_model('./model/3qualifier.h5') 
+model = load_model('./model/4qualifier.h5') 
 
 
 
