@@ -189,4 +189,104 @@ def segment(img):
 
 
 def recognition(img):
-    pass
+    for baybayin_char in final_predict:
+        if baybayin_char==0:
+            output+='a'
+        elif baybayin_char==1:
+            if final_predict[last]==1:
+                output+='b'
+            else:
+                output+='ba'
+        elif baybayin_char==2:
+            if final_predict[last]==2:
+                output+='dr'
+            else:
+                output+= 'dara'
+        elif baybayin_char==3:
+            output+= 'ei'
+
+        elif baybayin_char==4 :
+            if final_predict[last]==4:
+               output+='g'
+            else:
+                output+= 'ga'
+        elif baybayin_char==5:
+            if final_predict[last]==5:
+               output+='h'
+            else:
+                output+= 'ha'
+        elif baybayin_char==6:
+            if  final_predict[last]==6: 
+               output+='k'
+            else:
+                output+= 'ka'
+        elif baybayin_char==7:
+            if  final_predict[last]==7:
+               output+='l'
+            else:
+                output+= 'la'
+        elif baybayin_char==8:
+            if  final_predict[last]==8:
+               output+='m'
+            else:
+                output+= 'ma'
+        elif baybayin_char==9:
+            if final_predict[last]==9:
+               output+='n'
+            else:
+                output+= 'na'
+        elif baybayin_char==10:
+            if final_predict[last]==10:
+               output+='ng'
+            else:
+                output+= 'nga'
+        elif baybayin_char==11:
+            output+='ou'
+        elif baybayin_char==12:
+            if final_predict[last]==12:
+               output+='p'
+            else:
+                output+= 'pa'
+        elif baybayin_char==13:
+            if  final_predict[last]==13 :
+               output+='s'
+            else:
+                output+= 'sa'
+        elif baybayin_char==14:
+            if  final_predict[last]==14:
+               output+='t'
+            else:
+                output+= 'ta'
+        elif baybayin_char==15:
+            if final_predict[last]==15:
+               output+='w'
+            else:
+                output+= 'wa'
+        elif baybayin_char==16:
+            if final_predict[last]==16:
+               output+='y'
+            else:
+                output+= 'ya'
+    print(output)
+    
+           
+    a_file = open("tagalog_dict.txt", "r")
+
+    tagalog_words = []
+    for line in a_file:
+        stripped_line = line.strip()
+        line_list = stripped_line.split()
+        tagalog_words.append(line_list)
+
+    a_file.close()
+
+
+    highest=""
+
+    #print(output)
+    Ratios = process.extract(output,tagalog_words)
+    print(Ratios)
+    highest = process.extractOne(output,tagalog_words)
+    
+
+    return highest

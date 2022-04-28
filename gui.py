@@ -14,7 +14,7 @@ class Baybayin_GUI:
         self.center_window()
 
         #drawing canvas widget
-        self.canvas = tk.Canvas(height=200,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.canvas = tk.Canvas(height=300,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.canvas.pack()
         self.canvas.place(x=47,y=80)
         self.canvas.bind("<B1-Motion>",self.draw)
@@ -46,8 +46,8 @@ class Baybayin_GUI:
 
     # Putting window in center
     def center_window(self):
-        w = 800
-        h = 450
+        w = 900
+        h = 550
         ws = root.winfo_screenwidth()
         hs = root.winfo_screenheight()
         x = (ws / 2) - (w / 2) - 20
@@ -60,7 +60,7 @@ class Baybayin_GUI:
 
     def draw(self, event):
         x , y = event.x,event.y
-        r = 4
+        r = 3
         self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
         self.classify_btn.configure(state=NORMAL)
 
