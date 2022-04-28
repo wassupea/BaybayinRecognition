@@ -1,3 +1,4 @@
+from cv2 import resize
 from keras.models import load_model
 import cv2
 from matplotlib import image
@@ -6,7 +7,7 @@ import numpy as np
 import collections
 from skimage.morphology import skeletonize
 from thefuzz import process
-model = load_model('./model/qualifier.h5') 
+model = load_model('./model/3qualifier.h5') 
 
 
 
@@ -79,6 +80,7 @@ def segment(img):
             cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
             resize_contour = cv2.resize(cropped_contour, (64,64), interpolation=cv2.INTER_AREA)
             resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
+            cv2.imshow('sd', resize_contour)
             img_reshape = resize_contour.reshape(1,64,64,1)
             img_reshape = img_reshape/255
             pred = model.predict([img_reshape])[0]
@@ -98,7 +100,7 @@ def segment(img):
         if baybayin_char==0:
             output+='a'
         elif baybayin_char==1:
-                output+=' ba'
+                output+='ba'
         elif baybayin_char==2:
             output+= 'da/ra'
         elif baybayin_char==3:
@@ -106,33 +108,33 @@ def segment(img):
         elif baybayin_char==4:
             output+= 'ga'
         elif baybayin_char==5:
-            output+=' ha'
+            output+='ha'
         elif baybayin_char==6:
-            output+=' ka'
+            output+='ka'
         elif baybayin_char==7:
-            output+=' la'
+            output+='la'
         elif baybayin_char==8:
-            output+=' ma'
+            output+='ma'
         elif baybayin_char==9:
-            output+=' na'
+            output+='na'
         elif baybayin_char==10:
-            output+=' nga'
+            output+='nga'
         elif baybayin_char==11:
-            output+=' o/u'
+            output+='o/u'
         elif baybayin_char==12:
-            output+=' pa'
+            output+='pa'
         elif baybayin_char==13:
-            output+=' sa'
+            output+='sa'
         elif baybayin_char==14:
-            output+=' ta' 
+            output+='ta' 
         elif baybayin_char==15:
-            output+=' wa' # or i
+            output+='wa' # or i
         elif baybayin_char==16:
-            output+=' ya' # or u
+            output+='ya' # or u
         elif baybayin_char==17:
             output=output[:-1]
         elif baybayin_char==18:
-            output+=' tuldok' # or u
+            output+='tuldok' # or u
            
     return output
     
