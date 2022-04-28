@@ -49,6 +49,10 @@ def ret_x_cord_contour(contours):
 
 def segment(img):
     preprocessed = preprocess(img)
+    img_copy = img.copy()
+    img_copy = cv2.medianBlur(img_copy, 3)
+    img_copy = cv2.fastNlMeansDenoising(img_copy)
+    #cv2.imshow('copr', img_copy)
     print ('-------RUNNING SEGMENTATION -------')
     final_predict=[]
     output=""
@@ -58,29 +62,20 @@ def segment(img):
     # find the contours from the thresholded image
     contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-     # draw all contours
-    with_contours = cv2.drawContours(preprocessed, contours, -1, (0, 255, 0), 1)
-    #sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
-    
-    sorted_ctrs = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * img.shape[1] )
-   
-    area_sort = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
-
     try:
         contours_left_2_right = sorted(contours,key = ret_x_cord_contour,reverse=False)
     except:
         output='fixed drawing'
     count=0
 
-    try:
-        for (i,c) in enumerate(contours_left_2_right):
+    for (i,c) in enumerate(contours_left_2_right):
             x, y, w, h = cv2.boundingRect(c)
-            cropped_contour=img[y:y + h, x:x + w]
+            cropped_contour=img_copy[y:y + h, x:x + w]
             count+=1
             cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
             resize_contour = cv2.resize(cropped_contour, (64,64), interpolation=cv2.INTER_AREA)
             resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
-            cv2.imshow('sd', resize_contour)
+            cv2.imshow('sd', cropped_contour)
             img_reshape = resize_contour.reshape(1,64,64,1)
             img_reshape = img_reshape/255
             pred = model.predict([img_reshape])[0]
@@ -91,8 +86,7 @@ def segment(img):
             acc = max(pred)
         
             print(data)
-    except:
-        output='Fix Drawing!'
+    
         
     last = len(final_predict)-1
 
