@@ -7,7 +7,7 @@ import numpy as np
 import collections
 from skimage.morphology import skeletonize
 from thefuzz import process
-model = load_model('./model/4qualifier.h5') 
+model = load_model('./model/6qualifier.h5') 
 
 
 
@@ -70,7 +70,7 @@ def segment(img):
 
     for (i,c) in enumerate(contours_left_2_right):
             x, y, w, h = cv2.boundingRect(c)
-            cropped_contour=img_copy[y:y + h, x:x + w]
+            cropped_contour=img[y:y + h, x:x + w]
             count+=1
             cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
             resize_contour = cv2.resize(cropped_contour, (64,64), interpolation=cv2.INTER_AREA)
@@ -128,7 +128,10 @@ def segment(img):
         elif baybayin_char==17:
             output=output[:-1]
         elif baybayin_char==18:
-            output+='tuldok' # or u
+            output=output[:-1] + "e"
+        elif baybayin_char==19:
+            #output=output[:-1] + "o"
+            output+='.'
            
     return output
     

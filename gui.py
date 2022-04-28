@@ -6,6 +6,10 @@ import pyautogui
 import cv2
 import numpy as np   
 from recognition import preprocess, segment
+
+def printMessage():
+
+    print("HELLO PO")
 class Baybayin_GUI:
 
     def __init__(self, master):
@@ -21,7 +25,7 @@ class Baybayin_GUI:
 
 
         #title 
-        self.lab = tk.Label(text="WRITE BAYBAYIN CHARACTERS", width=28, height=1, fg="#3e7d75",bg="#a1d4cf",
+        self.lab = tk.Label(text="SINGLE BAYBAYIN RECOGNITION", width=28, height=1, fg="#3e7d75",bg="#a1d4cf",
                             font=('Lucida Typewriter', 20, ' bold '))
         self.lab.place(x=120, y=12)
         
@@ -34,14 +38,40 @@ class Baybayin_GUI:
         self.clear_btn.pack()
         self.clear_btn.place(x=340,y=400)
 
+        self.word_btn = Button(text = "Word",command=self.open_window,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
+        self.word_btn.pack()
+        self.word_btn.place(x=50,y=400)
+
         exit_btn = tk.Button(text = "Close",command=self.close_window,width = 10,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Tahoma',13))
         exit_btn.pack()
         exit_btn.place(x=500,y=400)
 
     
 
-    
-    def printMessage(self):
+    def open_window(self):
+        new_window=Toplevel(root)
+        w = 900
+        h = 550
+        ws = root.winfo_screenwidth()
+        hs = root.winfo_screenheight()
+        x = (ws / 2) - (w / 2) - 20
+        y = (hs / 2) - (h / 2) - 50
+        new_window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+   
+
+        self.lab = tk.Label(new_window,text="BAYBAYIN WORD RECOGNITION", width=28, height=1, fg="#3e7d75",bg="#a1d4cf",
+                            font=('Lucida Typewriter', 20, ' bold '))
+        self.lab.place(x=120, y=12)
+        classify_btn = Button(new_window,text = 'Classify',state=DISABLED,command=printMessage,width = 10,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Tahoma',13))
+        classify_btn.pack()
+        classify_btn.place(x=180,y=400)
+
+        clear_btn = Button(new_window,text = "Clear",command=printMessage,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
+        clear_btn.pack()
+        clear_btn.place(x=340,y=400)
+        root.resizable(width=False, height=False)
+
+    def printMessage():
         print("HELLO PO")
 
     # Putting window in center
@@ -60,7 +90,7 @@ class Baybayin_GUI:
 
     def draw(self, event):
         x , y = event.x,event.y
-        r = 3
+        r =3
         self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
         self.classify_btn.configure(state=NORMAL)
 
