@@ -53,6 +53,7 @@ def ret_x_cord_contour(contours):
     else:
         pass
 
+
 def segment(img):
     preprocessed = preprocess(img)
     img_copy = img.copy()
@@ -62,8 +63,8 @@ def segment(img):
     upper = cv2.imread('./upper.png')
     lower = cv2.imread('./lower.png')
 
-    ugray = preprocess(upper)
-    lgray =  preprocess(lower)
+    ugray = qualifier_process(upper)
+    lgray =  qualifier_process(lower)
     cv2.imshow('copr', upper)
     print ('-------RUNNING SEGMENTATION -------')
     final_predict=[]
@@ -92,18 +93,6 @@ def segment(img):
         #contours_left_2_right = sorted(contours,key = ret_x_cord_contour,reverse=False)
     #except:
         #output='fixed drawing'
-    count=0
-    upper_count=0
-    lower_count=0
-    ucount=0
-    lcount=0
-    for x in usort:
-        x, y, w, h = cv2.boundingRect(x)
-        upper_count+=1
-
-    for lx in lsort:
-        x, y, w, h = cv2.boundingRect(lx)
-        lower_count+=1
       
 
    
@@ -111,7 +100,7 @@ def segment(img):
     for (i,c) in enumerate(contours_left_2_right):
             x, y, w, h = cv2.boundingRect(c)
             cropped_contour=img[y:y + h, x:x + w]
-            count+=1
+     
             
             M = cv2.moments(c)
             cX = int(M["m10"] / M["m00"])
@@ -136,8 +125,16 @@ def segment(img):
     print("main_position",main_position)
     for (ui,uc) in enumerate(usort):
 
-        ucount+=1
-
+     
+        x, y, w, h = cv2.boundingRect(uc)
+        upper_contour=upper[y:y + h, x:x + w]
+        cv2.imshow('sd',upper_contour)
+        UM = cv2.moments(uc)
+        uX = int(UM["m10"] / UM["m00"])
+        u_position.append(uX)
+                    
+                    #joined.append(uX)
+                        
         x, y, w, h = cv2.boundingRect(uc)
         upper_contour=upper[y:y + h, x:x + w]
         cv2.imshow('sd',upper_contour)
@@ -165,20 +162,26 @@ def segment(img):
             
         x, y, w, h = cv2.boundingRect(lc)
         lower_contour=lower[y:y + h, x:x + w]
-        lcount+=1
+        
         UL = cv2.moments(lc)
         lX = int(UL["m10"] / UL["m00"])
         l_position.append(lX)
         cv2.rectangle(lower,(x,y),( x + w, y + h ),(90,0,255),2)
+        
         l_resize_contour = cv2.resize(lower_contour, (56,56), interpolation=cv2.INTER_AREA)
         l_resize_contour = cv2.cvtColor(l_resize_contour, cv2.COLOR_RGB2GRAY)
+        #cv2.imshow('sda', l_resize_contour)
         l_img_reshape = l_resize_contour.reshape(1,56,56,1)
         l_img_reshape = l_img_reshape/255
         l_pred = qualifier_model.predict([l_img_reshape])[0]
         l_final = np.argmax(l_pred)
         
         if l_final == 0:
+            print('cross')
             l_final = l_final+17
+
+        if l_final == 1:
+            l_final = l_final+18
 
         lower_predict.append(l_final)
         joined.append(l_final)
@@ -234,10 +237,30 @@ def segment(img):
         elif baybayin_char==17:
             output=output[:-1]
         elif baybayin_char==18:
-            output=output[:-1] + "e"
+            output=output[:-1] + "ei"
         elif baybayin_char==19:
-            #output=output[:-1] + "o"
-            output+='.'
+            output=output[:-1] + "ou"
+            #output+='.'
+
+        a_file = open("tagalog_dict.txt", "r")
+
+    tagalog_words = []
+
+    for line in a_file:
+        stripped_line = line.strip()
+        line_list = stripped_line.split()
+        tagalog_words.append(line_list)
+
+    a_file.close()
+
+
+    highest=""
+
+    #print(output)
+    Ratios = process.extract(output,tagalog_words)
+    print(Ratios)
+    highest = process.extractOne(output,tagalog_words)
+    
 
     return output
            
