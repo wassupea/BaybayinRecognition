@@ -17,11 +17,24 @@ class Baybayin_GUI:
         frame.pack()
         self.center_window()
 
+
+        #upper qualifier widget
+        self.uqualifier = tk.Canvas(height=100,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.uqualifier.pack()
+        self.uqualifier.place(x=97,y=70)
+        self.uqualifier.bind("<B1-Motion>",self.udraw)
+
         #drawing canvas widget
-        self.canvas = tk.Canvas(height=300,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.canvas = tk.Canvas(height=200,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.canvas.pack()
-        self.canvas.place(x=47,y=80)
+        self.canvas.place(x=97,y=170)
         self.canvas.bind("<B1-Motion>",self.draw)
+
+        #bottom qualifier widget
+        self.bqualifier = tk.Canvas(height=100,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.bqualifier.pack()
+        self.bqualifier.place(x=97,y=370)
+        self.bqualifier.bind("<B1-Motion>",self.bdraw)
 
 
         #title 
@@ -32,19 +45,19 @@ class Baybayin_GUI:
         #buttons widget
         self.classify_btn = Button(text = 'Classify',state=DISABLED,command=self.get_image,width = 10,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Tahoma',13))
         self.classify_btn.pack()
-        self.classify_btn.place(x=180,y=400)
+        self.classify_btn.place(x=180,y=500)
 
         self.clear_btn = Button(text = "Clear",command=self.clear_canvas,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
         self.clear_btn.pack()
-        self.clear_btn.place(x=340,y=400)
+        self.clear_btn.place(x=340,y=500)
 
         self.word_btn = Button(text = "Word",command=self.open_window,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
         self.word_btn.pack()
-        self.word_btn.place(x=50,y=400)
+        self.word_btn.place(x=50,y=500)
 
         exit_btn = tk.Button(text = "Close",command=self.close_window,width = 10,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Tahoma',13))
         exit_btn.pack()
-        exit_btn.place(x=500,y=400)
+        exit_btn.place(x=500,y=500)
 
     
 
@@ -93,10 +106,29 @@ class Baybayin_GUI:
         r =3
         self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
         self.classify_btn.configure(state=NORMAL)
+    def draw(self, event):
+        x , y = event.x,event.y
+        r = 3
+        self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
+        self.classify_btn.configure(state=NORMAL)
+
+    def udraw(self, event):
+        x , y = event.x,event.y
+        r = 3
+        self.uqualifier.create_oval(x-r,y-r,x+r,y+r,fill="black")
+        self.classify_btn.configure(state=NORMAL)
+
+    def bdraw(self, event):
+        x , y = event.x,event.y
+        r =3
+        self.bqualifier.create_oval(x-r,y-r,x+r,y+r,fill="black")
+        self.classify_btn.configure(state=NORMAL)
 
     def clear_canvas(self):
         self.classify_btn.configure(state=DISABLED)
         self.canvas.delete("all")
+        self.bqualifier.delete("all")
+        self.uqualifier.delete("all")
 
     def get_image(self):
 
@@ -105,10 +137,22 @@ class Baybayin_GUI:
         x, y = self.canvas.winfo_rootx(), self.canvas.winfo_rooty()
         w, h = self.canvas.winfo_width(), self.canvas.winfo_height()
         
+        ux, uy = self.uqualifier.winfo_rootx(), self.uqualifier.winfo_rooty()
+        uw, uh = self.uqualifier.winfo_width(), self.uqualifier.winfo_height()
+
+        bx, by = self.bqualifier.winfo_rootx(), self.bqualifier.winfo_rooty()
+        bw, bh = self.bqualifier.winfo_width(), self.bqualifier.winfo_height()
+        
 
         #Screen cap the drawing canvas
         path = './sulat.png'
         pyautogui.screenshot(path, region=(x, y, w, h))
+         #Screen cap the drawing canvas
+        upper = './upper.png'
+        pyautogui.screenshot(upper, region=(ux, uy, uw, uh))
+                #Screen cap the drawing canvas
+        lower = './lower.png'
+        pyautogui.screenshot(lower, region=(bx, by, bw, bh))
 
         #path.show()
         image = cv2.imread(path)
