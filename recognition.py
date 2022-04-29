@@ -25,7 +25,6 @@ def preprocess(img):
 
     image_blurred_d = cv2.dilate(image_blurred, None)
   
-
     #create a binary threshold image
     ret, binary = cv2.threshold(image_blurred_d, 150, 255, cv2.THRESH_BINARY_INV)
 
@@ -37,9 +36,14 @@ def preprocess(img):
     dilation = cv2.dilate(erosion, kernel1, iterations = 3)
    
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
-    erosion1 = cv2.erode(dilation, kernel, iterations = 5)
+    erosion1 = cv2.erode(dilation, kernel, iterations = 4)
 
-    return erosion1
+    blur1 = cv2.medianBlur(erosion1, 3)
+    img_copy = cv2.fastNlMeansDenoising(blur1)
+
+    cv2.imshow('im', img_copy)
+
+    return img_copy
 
 def qualifier_process(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -65,7 +69,6 @@ def segment(img):
 
     ugray = qualifier_process(upper)
     lgray =  qualifier_process(lower)
-    cv2.imshow('copr', upper)
     print ('-------RUNNING SEGMENTATION -------')
     final_predict=[]
     output=""
@@ -108,7 +111,7 @@ def segment(img):
             cv2.rectangle(img,(x,y),( x + w, y + h ),(90,0,255),2)
             resize_contour = cv2.resize(cropped_contour, (64,64), interpolation=cv2.INTER_AREA)
             resize_contour = cv2.cvtColor(resize_contour, cv2.COLOR_RGB2GRAY)
-            cv2.imshow('sd', cropped_contour)
+            cv2.imshow('main_contour', cropped_contour)
             img_reshape = resize_contour.reshape(1,64,64,1)
             img_reshape = img_reshape/255
             pred = model.predict([img_reshape])[0]
@@ -116,8 +119,19 @@ def segment(img):
             
             final = np.argmax(pred)
           
-            final_predict.append(final)  
-            joined.append(final)
+            final_predict.append(final)
+            if 8 in final_predict:
+                ma_index = final_predict.index(8)
+                before = ma_index-1
+                
+                print('before index', before)
+                if before > -1:
+                    before_char = final_predict[before]
+                    print('before', before_char)
+                    if before_char == 15:
+                        print('popped')
+                        final_predict.pop(before)
+            joined.append(final_predict)
             data = str(final) + ':' +str((max(pred))*100)+'%'
             #acc = max(pred)
         
@@ -128,21 +142,10 @@ def segment(img):
      
         x, y, w, h = cv2.boundingRect(uc)
         upper_contour=upper[y:y + h, x:x + w]
-        cv2.imshow('sd',upper_contour)
+        cv2.imshow('upper_contour',upper_contour)
         UM = cv2.moments(uc)
         uX = int(UM["m10"] / UM["m00"])
         u_position.append(uX)
-                    
-                    #joined.append(uX)
-                        
-        x, y, w, h = cv2.boundingRect(uc)
-        upper_contour=upper[y:y + h, x:x + w]
-        cv2.imshow('sd',upper_contour)
-        UM = cv2.moments(uc)
-        uX = int(UM["m10"] / UM["m00"])
-        u_position.append(uX)
-                    
-                    #joined.append(uX)
                         
         cv2.rectangle(upper,(x,y),( x + w, y + h ),(90,0,255),2)
            
@@ -170,7 +173,7 @@ def segment(img):
         
         l_resize_contour = cv2.resize(lower_contour, (56,56), interpolation=cv2.INTER_AREA)
         l_resize_contour = cv2.cvtColor(l_resize_contour, cv2.COLOR_RGB2GRAY)
-        #cv2.imshow('sda', l_resize_contour)
+        #cv2.imshow('lower', l_resize_contour)
         l_img_reshape = l_resize_contour.reshape(1,56,56,1)
         l_img_reshape = l_img_reshape/255
         l_pred = qualifier_model.predict([l_img_reshape])[0]
@@ -242,24 +245,24 @@ def segment(img):
             output=output[:-1] + "ou"
             #output+='.'
 
-        a_file = open("tagalog_dict.txt", "r")
+    #a_file = open("tagalog_dict.txt", "r")
 
-    tagalog_words = []
+    #tagalog_words = []
 
-    for line in a_file:
-        stripped_line = line.strip()
-        line_list = stripped_line.split()
-        tagalog_words.append(line_list)
+    #for line in a_file:
+        #stripped_line = line.strip()
+        #line_list = stripped_line.split()
+        #tagalog_words.append(line_list)
 
-    a_file.close()
+    #a_file.close()
 
 
-    highest=""
+    #highest=""
 
     #print(output)
-    Ratios = process.extract(output,tagalog_words)
-    print(Ratios)
-    highest = process.extractOne(output,tagalog_words)
+    #Ratios = process.extract(output,tagalog_words)
+    #print(Ratios)
+    #highest = process.extractOne(output,tagalog_words)
     
 
     return output
