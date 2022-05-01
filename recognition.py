@@ -5,10 +5,9 @@ from matplotlib import image
 import matplotlib.pyplot as plt
 import numpy as np
 import collections
-from skimage.morphology import skeletonize
-from thefuzz import process
+
 model = load_model('./model/baybayin_model2.h5')
-qualifier_model = load_model('./model/qualifier-only.h5')
+qualifier_model = load_model('./model/qualifier-onlyx4848.h5')
 
 
 
@@ -48,7 +47,13 @@ def preprocess(img):
 def qualifier_process(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
-    return binary
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    erosion = cv2.erode(binary, kernel, iterations = 1)
+   
+
+    kernel1 = np.ones((3,3),np.uint8)
+    dilation = cv2.dilate(erosion, kernel1, iterations = 1)
+    return dilation
 
 def ret_x_cord_contour(contours):
     if cv2.contourArea(contours) > 10:
@@ -150,9 +155,9 @@ def segment(img):
         cv2.rectangle(upper,(x,y),( x + w, y + h ),(90,0,255),2)
            
             
-        u_resize_contour = cv2.resize(upper_contour, (56,56), interpolation=cv2.INTER_AREA)
+        u_resize_contour = cv2.resize(upper_contour, (48,48), interpolation=cv2.INTER_AREA)
         u_resize_contour = cv2.cvtColor(u_resize_contour, cv2.COLOR_RGB2GRAY)
-        u_img_reshape = u_resize_contour.reshape(1,56,56,1)
+        u_img_reshape = u_resize_contour.reshape(1,48,48,1)
         u_img_reshape = u_img_reshape/255
         u_pred = qualifier_model.predict([u_img_reshape])[0]
         u_final = np.argmax(u_pred)
@@ -171,10 +176,10 @@ def segment(img):
         l_position.append(lX)
         cv2.rectangle(lower,(x,y),( x + w, y + h ),(90,0,255),2)
         
-        l_resize_contour = cv2.resize(lower_contour, (56,56), interpolation=cv2.INTER_AREA)
+        l_resize_contour = cv2.resize(lower_contour, (48,48), interpolation=cv2.INTER_AREA)
         l_resize_contour = cv2.cvtColor(l_resize_contour, cv2.COLOR_RGB2GRAY)
         #cv2.imshow('lower', l_resize_contour)
-        l_img_reshape = l_resize_contour.reshape(1,56,56,1)
+        l_img_reshape = l_resize_contour.reshape(1,48,48,1)
         l_img_reshape = l_img_reshape/255
         l_pred = qualifier_model.predict([l_img_reshape])[0]
         l_final = np.argmax(l_pred)

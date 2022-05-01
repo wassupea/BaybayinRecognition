@@ -19,45 +19,42 @@ class Baybayin_GUI:
 
 
         #upper qualifier widget
-        self.uqualifier = tk.Canvas(height=100,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.uqualifier = tk.Canvas(height=60,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.uqualifier.pack()
-        self.uqualifier.place(x=97,y=70)
+        self.uqualifier.place(x=97,y=110)
         self.uqualifier.bind("<B1-Motion>",self.udraw)
 
         #drawing canvas widget
-        self.canvas = tk.Canvas(height=200,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.canvas = tk.Canvas(height=170,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.canvas.pack()
         self.canvas.place(x=97,y=170)
         self.canvas.bind("<B1-Motion>",self.draw)
 
         #bottom qualifier widget
-        self.bqualifier = tk.Canvas(height=100,width=700,bg="white",cursor="dotbox",highlightthickness=5)
+        self.bqualifier = tk.Canvas(height=60,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.bqualifier.pack()
-        self.bqualifier.place(x=97,y=370)
+        self.bqualifier.place(x=97,y=330)
         self.bqualifier.bind("<B1-Motion>",self.bdraw)
 
 
         #title 
         self.lab = tk.Label(text="SINGLE BAYBAYIN RECOGNITION", width=28, height=1, fg="#3e7d75",bg="#a1d4cf",
                             font=('Lucida Typewriter', 20, ' bold '))
-        self.lab.place(x=120, y=12)
+        self.lab.place(x=230, y=20)
         
         #buttons widget
         self.classify_btn = Button(text = 'Classify',state=DISABLED,command=self.get_image,width = 10,borderwidth=0,bg = '#5899d1',fg = 'white',font = ('Tahoma',13))
         self.classify_btn.pack()
-        self.classify_btn.place(x=180,y=500)
+        self.classify_btn.place(x=230,y=500)
 
         self.clear_btn = Button(text = "Clear",command=self.clear_canvas,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
         self.clear_btn.pack()
-        self.clear_btn.place(x=340,y=500)
+        self.clear_btn.place(x=390,y=500)
 
-        self.word_btn = Button(text = "Word",command=self.open_window,width = 10,borderwidth=0,bg ='#4ad977',fg = 'white',font = ('Tahoma',13))
-        self.word_btn.pack()
-        self.word_btn.place(x=50,y=500)
 
         exit_btn = tk.Button(text = "Close",command=self.close_window,width = 10,borderwidth=0,bg ='#e87d86',fg = 'white',font = ('Tahoma',13))
         exit_btn.pack()
-        exit_btn.place(x=500,y=500)
+        exit_btn.place(x=550,y=500)
 
     
 
