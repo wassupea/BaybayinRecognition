@@ -33,7 +33,7 @@ class Baybayin_GUI:
         #bottom qualifier widget
         self.bqualifier = tk.Canvas(height=60,width=700,bg="white",cursor="dotbox",highlightthickness=5)
         self.bqualifier.pack()
-        self.bqualifier.place(x=97,y=330)
+        self.bqualifier.place(x=97,y=350)
         self.bqualifier.bind("<B1-Motion>",self.bdraw)
 
 
@@ -100,7 +100,7 @@ class Baybayin_GUI:
 
     def draw(self, event):
         x , y = event.x,event.y
-        r =3
+        r =2
         self.canvas.create_oval(x-r,y-r,x+r,y+r,fill="black")
         self.classify_btn.configure(state=NORMAL)
     def draw(self, event):

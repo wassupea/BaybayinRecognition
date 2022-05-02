@@ -14,35 +14,33 @@ qualifier_model = load_model('./model/qualifier-onlyx4848.h5')
 def preprocess(img):
     print ('-------RUNNING PREPROCESSING -------')
     #gaussian blur the image  --- used for noise removal of the image
-    blur = cv2.GaussianBlur(img,(5,5),cv2.BORDER_DEFAULT)
+    blur = cv2.bilateralFilter(img,9,75,75)
 
     #convert image to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    image_blurred = cv2.GaussianBlur(gray, (9, 9), 0)
+    gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
   
 
-    image_blurred_d = cv2.dilate(image_blurred, None)
+    #image_blurred_d = cv2.dilate(gray, None)
   
     #create a binary threshold image
-    ret, binary = cv2.threshold(image_blurred_d, 150, 255, cv2.THRESH_BINARY_INV)
+    ret, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
     erosion = cv2.erode(binary, kernel, iterations = 1)
    
 
-    kernel1 = np.ones((5,5),np.uint8)
-    dilation = cv2.dilate(erosion, kernel1, iterations = 3)
+    kernel1 = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    dilation = cv2.dilate(erosion, kernel1, iterations = 4)
    
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
-    erosion1 = cv2.erode(dilation, kernel, iterations = 4)
+    erosion1 = cv2.erode(dilation, kernel, iterations = 2)
 
-    blur1 = cv2.medianBlur(erosion1, 3)
-    img_copy = cv2.fastNlMeansDenoising(blur1)
+    img_copy = cv2.fastNlMeansDenoising(erosion1)
 
-    cv2.imshow('im', img_copy)
+    cv2.imshow('dilation', img_copy)
+    cv2.imshow('erosion', erosion1)
 
-    return img_copy
+    return erosion1
 
 def qualifier_process(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
