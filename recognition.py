@@ -29,15 +29,15 @@ def preprocess(img):
     erosion = cv2.erode(binary, kernel, iterations = 1)
    
 
-    kernel1 = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
-    dilation = cv2.dilate(erosion, kernel1, iterations = 4)
+    kernel1 = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+    dilation = cv2.dilate(erosion, kernel1, iterations = 2)
    
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
     erosion1 = cv2.erode(dilation, kernel, iterations = 2)
 
     img_copy = cv2.fastNlMeansDenoising(erosion1)
 
-    cv2.imshow('dilation', img_copy)
+    cv2.imshow('dilation', dilation)
     cv2.imshow('erosion', erosion1)
 
     return erosion1
@@ -134,6 +134,28 @@ def segment(img):
                     if before_char == 15:
                         print('popped')
                         final_predict.pop(before)
+
+            if 5 in final_predict:
+                ha_index = final_predict.index(5)
+                after = ha_index+1
+                
+                print('after index', after)
+                try:
+                    if len(final_predict) > -1:
+                        after_char = final_predict[after]
+                        if after_char == 5:
+                            final_predict.pop(ha_index)
+                            new_index = final_predict.index(5)
+                            final_predict[new_index] = 3
+
+                        if after_char == 4:
+                            final_predict.pop(ha_index)
+                            new_index = final_predict.index(4)
+                            final_predict[new_index] = 3
+                            print('final: ', final_predict)
+                except:
+                    pass
+               
             joined.append(final_predict)
             data = str(final) + ':' +str((max(pred))*100)+'%'
             #acc = max(pred)
